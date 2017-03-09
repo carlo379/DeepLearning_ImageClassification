@@ -1,0 +1,6 @@
+# Ignore Images
+
+
+cifar-10-batches-py/
+*.tar.gz
+*.p
