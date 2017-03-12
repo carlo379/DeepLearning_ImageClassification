@@ -1,6 +1,9 @@
 # Ignore Images
 
-
-cifar-10-batches-py/
+__pycache__/*
+__pycache__
+cifar-10-batches-py/*
+cifar-10-batches-py
 *.tar.gz
+*.gz
 *.p
