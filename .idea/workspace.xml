@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="09e856ce-55ff-4776-ac10-58d889453630" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification_TFoS.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/CarlosM_Project2_v2/run_command" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification_TFoS.py" afterPath="$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification_TFoS.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,22 +22,44 @@
       <file leaf-file-name="dlnd_image_classification_TFoS.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification_TFoS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="371" column="32" lean-forward="false" selection-start-line="371" selection-start-column="32" selection-end-line="371" selection-end-column="32" />
+            <state relative-caret-position="617">
+              <caret line="673" column="14" lean-forward="false" selection-start-line="673" selection-start-column="14" selection-end-line="673" selection-end-column="14" />
               <folding>
-                <element signature="e#42#80#0" expanded="true" />
-                <element signature="e#962#1431#0" expanded="false" />
-                <element signature="e#1504#1871#0" expanded="false" />
-                <element signature="e#1972#2409#0" expanded="false" />
-                <element signature="e#2501#2739#0" expanded="false" />
-                <element signature="e#2829#3029#0" expanded="false" />
-                <element signature="e#3133#3286#0" expanded="false" />
-                <element signature="e#3465#4711#0" expanded="false" />
-                <element signature="e#4808#5219#0" expanded="false" />
-                <element signature="e#5345#6013#0" expanded="false" />
-                <element signature="e#6110#6769#0" expanded="false" />
-                <element signature="e#6881#8322#0" expanded="false" />
-                <marker date="1489476420000" expanded="false" signature="589:805" ph="..." />
+                <element signature="e#42#51#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="run_command" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/run_command">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="10319">
+              <caret line="9390" column="158" lean-forward="false" selection-start-line="9390" selection-start-column="158" selection-end-line="9390" selection-end-column="158" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="helper.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/helper.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="734">
+              <caret line="165" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="165" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="problem_unittests.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/problem_unittests.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -54,10 +77,18 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>pyspark</find>
-      <find>train_neural_network</find>
       <find>print_stats</find>
       <find>save_model_path</find>
       <find>preprocess_data_and_save</find>
+      <find>tf.train</find>
+      <find>run</find>
+      <find>train_neural_network</find>
+      <find>tf.tra</find>
+      <find>helper</find>
+      <find>request</find>
+      <find>urlretrieve</find>
+      <find>tqdm</find>
+      <find>num_executors</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -68,13 +99,14 @@
       <list>
         <option value="$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification.py" />
         <option value="$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification_TFoS.py" />
+        <option value="$PROJECT_DIR$/CarlosM_Project2_v2/run_command" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="402" />
+    <option name="x" value="346" />
     <option name="y" value="23" />
-    <option name="width" value="1278" />
+    <option name="width" value="1325" />
     <option name="height" value="1023" />
   </component>
   <component name="ProjectView">
@@ -92,7 +124,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -122,6 +153,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -303,26 +335,26 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="402" y="23" width="1278" height="1023" extended-state="0" />
+    <frame x="346" y="23" width="1325" height="1023" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39163497" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4072086" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4575725" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14930183" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14930183" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39957035" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4575725" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39957035" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -335,24 +367,12 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification.py">
+    <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification_TFoS.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#42#80#0" expanded="true" />
-            <element signature="e#1288#1655#0" expanded="false" />
-            <element signature="e#1756#2193#0" expanded="false" />
-            <element signature="e#2285#2523#0" expanded="false" />
-            <element signature="e#2613#2813#0" expanded="false" />
-            <element signature="e#2917#3070#0" expanded="false" />
-            <element signature="e#3249#4495#0" expanded="false" />
-            <element signature="e#4592#5003#0" expanded="false" />
-            <element signature="e#5129#5797#0" expanded="false" />
-            <element signature="e#5894#6553#0" expanded="false" />
-            <element signature="e#6587#8028#0" expanded="false" />
-            <element signature="e#8126#8520#0" expanded="false" />
-            <element signature="e#8596#9217#0" expanded="false" />
+            <element signature="e#42#51#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -361,21 +381,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#42#80#0" expanded="true" />
-            <element signature="e#1288#1655#0" expanded="false" />
-            <element signature="e#1756#2193#0" expanded="false" />
-            <element signature="e#2285#2523#0" expanded="false" />
-            <element signature="e#2613#2813#0" expanded="false" />
-            <element signature="e#2917#3070#0" expanded="false" />
-            <element signature="e#3249#4495#0" expanded="false" />
-            <element signature="e#4592#5003#0" expanded="false" />
-            <element signature="e#5129#5797#0" expanded="false" />
-            <element signature="e#5894#6553#0" expanded="false" />
-            <element signature="e#6587#8028#0" expanded="false" />
-            <element signature="e#8126#8520#0" expanded="false" />
-            <element signature="e#8596#9217#0" expanded="false" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -390,21 +402,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="321" column="17" lean-forward="true" selection-start-line="321" selection-start-column="17" selection-end-line="321" selection-end-column="17" />
-          <folding>
-            <element signature="e#42#80#0" expanded="true" />
-            <element signature="e#1288#1655#0" expanded="false" />
-            <element signature="e#1756#2193#0" expanded="false" />
-            <element signature="e#2285#2523#0" expanded="false" />
-            <element signature="e#2613#2813#0" expanded="false" />
-            <element signature="e#2917#3070#0" expanded="false" />
-            <element signature="e#3249#4495#0" expanded="false" />
-            <element signature="e#4592#5003#0" expanded="false" />
-            <element signature="e#5129#5797#0" expanded="false" />
-            <element signature="e#5894#6553#0" expanded="false" />
-            <element signature="e#6587#8028#0" expanded="false" />
-            <element signature="e#8126#8520#0" expanded="false" />
-            <element signature="e#8596#9217#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -412,28 +409,43 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
           <caret line="113" column="0" lean-forward="true" selection-start-line="113" selection-start-column="0" selection-end-line="113" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/problem_unittests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/helper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="734">
+          <caret line="165" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="165" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/run_command">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10319">
+          <caret line="9390" column="158" lean-forward="false" selection-start-line="9390" selection-start-column="158" selection-end-line="9390" selection-end-column="158" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CarlosM_Project2_v2/dlnd_image_classification_TFoS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="371" column="32" lean-forward="false" selection-start-line="371" selection-start-column="32" selection-end-line="371" selection-end-column="32" />
+        <state relative-caret-position="617">
+          <caret line="673" column="14" lean-forward="false" selection-start-line="673" selection-start-column="14" selection-end-line="673" selection-end-column="14" />
           <folding>
-            <element signature="e#42#80#0" expanded="true" />
-            <element signature="e#962#1431#0" expanded="false" />
-            <element signature="e#1504#1871#0" expanded="false" />
-            <element signature="e#1972#2409#0" expanded="false" />
-            <element signature="e#2501#2739#0" expanded="false" />
-            <element signature="e#2829#3029#0" expanded="false" />
-            <element signature="e#3133#3286#0" expanded="false" />
-            <element signature="e#3465#4711#0" expanded="false" />
-            <element signature="e#4808#5219#0" expanded="false" />
-            <element signature="e#5345#6013#0" expanded="false" />
-            <element signature="e#6110#6769#0" expanded="false" />
-            <element signature="e#6881#8322#0" expanded="false" />
-            <marker date="1489476420000" expanded="false" signature="589:805" ph="..." />
+            <element signature="e#42#51#0" expanded="true" />
           </folding>
         </state>
       </provider>

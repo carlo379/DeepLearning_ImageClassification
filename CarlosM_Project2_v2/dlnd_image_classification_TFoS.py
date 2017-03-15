@@ -1,22 +1,197 @@
 # GET DATA
 #============================#
-from urllib.request import urlretrieve
+import os
+import re
+import sys
+import tarfile
+
+from six.moves import urllib
+
 from os.path import isfile, isdir
 from tqdm import tqdm
 import tarfile
 import numpy as np
 import tensorflow as tf
 import pickle
-import helper
-import random
-# from pyspark.context import SparkContext
-# from pyspark.conf import SparkConf
-# from com.yahoo.ml.tf import TFCluster, TFNode
-# from datetime import datetime
 
+import random
+from pyspark.context import SparkContext
+from pyspark.conf import SparkConf
+from com.yahoo.ml.tf import TFCluster, TFNode
+from datetime import datetime
+import pickle
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import LabelBinarizer
 
 # Set Global Variable for Data Folder Path
 cifar10_dataset_folder_path = 'cifar-10-batches-py'
+
+worker_num = ""
+job_name = ""
+task_index = ""
+num_workers = ""
+
+# HELPER
+def _load_label_names():
+    """
+    Load the label names from file
+    """
+    return ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+
+
+def load_cfar10_batch(cifar10_dataset_folder_path, batch_id):
+    """
+    Load a batch of the dataset
+    """
+    with open(cifar10_dataset_folder_path + '/data_batch_' + str(batch_id), mode='rb') as file:
+        batch = pickle.load(file, encoding='latin1')
+
+    features = batch['data'].reshape((len(batch['data']), 3, 32, 32)).transpose(0, 2, 3, 1)
+    labels = batch['labels']
+
+    return features, labels
+
+
+def display_stats(cifar10_dataset_folder_path, batch_id, sample_id):
+    """
+    Display Stats of the the dataset
+    """
+    batch_ids = list(range(1, 6))
+
+    if batch_id not in batch_ids:
+        print('Batch Id out of Range. Possible Batch Ids: {}'.format(batch_ids))
+        return None
+
+    features, labels = load_cfar10_batch(cifar10_dataset_folder_path, batch_id)
+
+    if not (0 <= sample_id < len(features)):
+        print('{} samples in batch {}.  {} is out of range.'.format(len(features), batch_id, sample_id))
+        return None
+
+    print('\nStats of batch {}:'.format(batch_id))
+    print('Samples: {}'.format(len(features)))
+    print('Label Counts: {}'.format(dict(zip(*np.unique(labels, return_counts=True)))))
+    print('First 20 Labels: {}'.format(labels[:20]))
+
+    sample_image = features[sample_id]
+    sample_label = labels[sample_id]
+    label_names = _load_label_names()
+
+    print('\nExample of Image {}:'.format(sample_id))
+    print('Image - Min Value: {} Max Value: {}'.format(sample_image.min(), sample_image.max()))
+    print('Image - Shape: {}'.format(sample_image.shape))
+    print('Label - Label Id: {} Name: {}'.format(sample_label, label_names[sample_label]))
+    plt.axis('off')
+    plt.imshow(sample_image)
+
+
+def _preprocess_and_save(normalize, one_hot_encode, features, labels, filename):
+    """
+    Preprocess data and save it to file
+    """
+    features = normalize(features)
+    labels = one_hot_encode(labels)
+
+    pickle.dump((features, labels), open(filename, 'wb'))
+
+
+def preprocess_and_save_data(cifar10_dataset_folder_path, normalize, one_hot_encode):
+    """
+    Preprocess Training and Validation Data
+    """
+    n_batches = 5
+    valid_features = []
+    valid_labels = []
+
+    for batch_i in range(1, n_batches + 1):
+        features, labels = load_cfar10_batch(cifar10_dataset_folder_path, batch_i)
+        validation_count = int(len(features) * 0.1)
+
+        # Prprocess and save a batch of training data
+        _preprocess_and_save(
+            normalize,
+            one_hot_encode,
+            features[:-validation_count],
+            labels[:-validation_count],
+            'preprocess_batch_' + str(batch_i) + '.p')
+
+        # Use a portion of training batch for validation
+        valid_features.extend(features[-validation_count:])
+        valid_labels.extend(labels[-validation_count:])
+
+    # Preprocess and Save all validation data
+    _preprocess_and_save(
+        normalize,
+        one_hot_encode,
+        np.array(valid_features),
+        np.array(valid_labels),
+        'preprocess_validation.p')
+
+    with open(cifar10_dataset_folder_path + '/test_batch', mode='rb') as file:
+        batch = pickle.load(file, encoding='latin1')
+
+    # load the training data
+    test_features = batch['data'].reshape((len(batch['data']), 3, 32, 32)).transpose(0, 2, 3, 1)
+    test_labels = batch['labels']
+
+    # Preprocess and Save all training data
+    _preprocess_and_save(
+        normalize,
+        one_hot_encode,
+        np.array(test_features),
+        np.array(test_labels),
+        'preprocess_training.p')
+
+
+def batch_features_labels(features, labels, batch_size):
+    """
+    Split features and labels into batches
+    """
+    for start in range(0, len(features), batch_size):
+        end = min(start + batch_size, len(features))
+        yield features[start:end], labels[start:end]
+
+
+def load_preprocess_training_batch(batch_id, batch_size):
+    """
+    Load the Preprocessed Training data and return them in batches of <batch_size> or less
+    """
+    filename = 'preprocess_batch_' + str(batch_id) + '.p'
+    features, labels = pickle.load(open(filename, mode='rb'))
+
+    # Return the training data in batches of size <batch_size> or less
+    return batch_features_labels(features, labels, batch_size)
+
+
+def display_image_predictions(features, labels, predictions):
+    n_classes = 10
+    label_names = _load_label_names()
+    label_binarizer = LabelBinarizer()
+    label_binarizer.fit(range(n_classes))
+    label_ids = label_binarizer.inverse_transform(np.array(labels))
+
+    fig, axies = plt.subplots(nrows=4, ncols=2)
+    fig.tight_layout()
+    fig.suptitle('Softmax Predictions', fontsize=20, y=1.1)
+
+    n_predictions = 3
+    margin = 0.05
+    ind = np.arange(n_predictions)
+    width = (1. - 2. * margin) / n_predictions
+
+    for image_i, (feature, label_id, pred_indicies, pred_values) in enumerate(zip(features, label_ids, predictions.indices, predictions.values)):
+        pred_names = [label_names[pred_i] for pred_i in pred_indicies]
+        correct_name = label_names[label_id]
+
+        axies[image_i][0].imshow(feature)
+        axies[image_i][0].set_title(correct_name)
+        axies[image_i][0].set_axis_off()
+
+        axies[image_i][1].barh(ind + margin, pred_values[::-1], width)
+        axies[image_i][1].set_yticks(ind + margin)
+        axies[image_i][1].set_yticklabels(pred_names[::-1])
+        axies[image_i][1].set_xticks([0, 0.5, 1.0])
 
 # Class to Track Download Progress
 #=================================#
@@ -31,17 +206,53 @@ class DLProgress(tqdm):
 # Check If CIFAR data is available; if Not, then download
 #========================================================#
 def maybe_download_and_extract():
-    if not isfile('cifar-10-python.tar.gz'):
-        with DLProgress(unit='B', unit_scale=True, miniters=1, desc='CIFAR-10 Dataset') as pbar:
-            urlretrieve(
-                'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz',
-                'cifar-10-python.tar.gz',
-                pbar.hook)
+    DATA_URL = 'http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz'
+    """Download and extract the tarball from Alex's website."""
+    dest_directory = "/tmp/cifar10_data"
+    if not os.path.exists(dest_directory):
+        os.makedirs(dest_directory)
+    filename = DATA_URL.split('/')[-1]
+    filepath = os.path.join(dest_directory, filename)
+    if not os.path.exists(filepath):
+        def _progress(count, block_size, total_size):
+            sys.stdout.write('\r>> Downloading %s %.1f%%' % (filename,
+                                                             float(count * block_size) / float(total_size) * 100.0))
+            sys.stdout.flush()
 
-    if not isdir(cifar10_dataset_folder_path):
-        with tarfile.open('cifar-10-python.tar.gz') as tar:
-            tar.extractall()
-            tar.close()
+        filepath, _ = urllib.request.urlretrieve(DATA_URL, filepath, _progress)
+        print()
+        statinfo = os.stat(filepath)
+        print('Successfully downloaded', filename, statinfo.st_size, 'bytes.')
+
+    tarfile.open(filepath, 'r:gz').extractall(dest_directory)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Normalize Data
 #============================#
@@ -258,57 +469,89 @@ def print_stats(session, feature_batch, label_batch, cost, accuracy,  x, y, keep
 
 # Preprocess all data and Save and Train
 #=======================================#
-def preprocess_data_and_save(epochs, batch_size, keep_probability):
-    # Preprocess Training, Validation, and Testing Data
-    helper.preprocess_and_save_data(cifar10_dataset_folder_path, normalize, one_hot_encode)
+def preprocess_data_and_save(epochs, batch_size, keep_probability, ctx):
+    # Get TF cluster and server instances
+    cluster, server = TFNode.start_cluster_server(ctx, 1, args.rdma)
 
-    # Load the Preprocessed Validation data
-    valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
+    if job_name == "ps":
+        server.join()
+    elif job_name == "worker":
+        # Assigns ops to the local worker by default.
+        with tf.device(tf.train.replica_device_setter(
+                worker_device="/job:worker/task:%d" % task_index,
+                cluster=cluster)):
 
-    # Remove previous weights, bias, inputs, etc..
-    tf.reset_default_graph()
+            # Preprocess Training, Validation, and Testing Data
+            helper.preprocess_and_save_data(cifar10_dataset_folder_path, normalize, one_hot_encode)
 
-    # Inputs
-    x = neural_net_image_input((32, 32, 3))
-    y = neural_net_label_input(10)
-    keep_prob = neural_net_keep_prob_input()
+            # Load the Preprocessed Validation data
+            valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
 
-    # Model
-    logits = conv_net(x, keep_prob)
+            # Remove previous weights, bias, inputs, etc..
+            tf.reset_default_graph()
 
-    # Name logits Tensor, so that is can be loaded from disk after training
-    logits = tf.identity(logits, name='logits')
+            # Inputs
+            x = neural_net_image_input((32, 32, 3))
+            y = neural_net_label_input(10)
+            keep_prob = neural_net_keep_prob_input()
 
-    # Loss and Optimizer
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y))
-    optimizer = tf.train.AdamOptimizer(1e-4).minimize(cost)
+            # Model
+            logits = conv_net(x, keep_prob)
 
-    # Accuracy
-    correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(y, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
+            # Name logits Tensor, so that is can be loaded from disk after training
+            logits = tf.identity(logits, name='logits')
 
-    save_model_path = './image_classification'
+            # Loss and Optimizer
+            global_step = tf.Variable(0)
+            cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y))
+            optimizer = tf.train.AdamOptimizer(1e-4).minimize(cost, global_step=global_step)
 
-    print('Training...')
-    with tf.Session() as sess:
-        # Initializing the variables
-        sess.run(tf.global_variables_initializer())
+            # Accuracy
+            correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(y, 1))
+            accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
 
-        # Training cycle
-        for epoch in range(epochs):
-            # Loop over all batches
-            n_batches = 5
-            for batch_i in range(1, n_batches + 1):
-                for batch_features, batch_labels in helper.load_preprocess_training_batch(batch_i, batch_size):
-                    train_neural_network(sess, optimizer, keep_probability, batch_features, batch_labels, x, y, keep_prob )
-                print('Epoch {:>2}, CIFAR-10 Batch {}:  '.format(epoch + 1, batch_i), end='')
-                print_stats(sess, batch_features, batch_labels, cost, accuracy, x, y, keep_prob, valid_features, valid_labels )
+            save_model_path = './image_classification'
 
-        # Save Model
-        saver = tf.train.Saver()
-        save_path = saver.save(sess, save_model_path)
+            # Save Model
+            saver = tf.train.Saver()
+            summary_op = tf.summary.merge_all()
+            init_op = tf.global_variables_initializer()
 
+        # Create a "supervisor", which oversees the training process and stores model state into HDFS
+        logdir = TFNode.hdfs_path(ctx, args.model)
+        print("tensorflow model path: {0}".format(logdir))
+        summary_writer = tf.summary.FileWriter("tensorboard_%d" % (worker_num), graph=tf.get_default_graph())
+        sv = tf.train.Supervisor(is_chief=(task_index == 0),
+                                 logdir=logdir,
+                                 init_op=init_op,
+                                 summary_op=summary_op,
+                                 global_step=global_step,
+                                 summary_writer=summary_writer,
+                                 saver=saver,
+                                 save_model_secs=10)
 
+        print('Training...')
+        with sv.managed_session(server.target) as sess:
+            # Initializing the variables
+            # init_op = tf.global_variables_initializer()
+            # sess.run(tf.global_variables_initializer())
+
+            # Training cycle
+            for epoch in range(epochs):
+                # Loop over all batches
+                n_batches = 5
+                for batch_i in range(1, n_batches + 1):
+                    for batch_features, batch_labels in helper.load_preprocess_training_batch(batch_i, batch_size):
+                        train_neural_network(sess, optimizer, keep_probability, batch_features, batch_labels, x, y, keep_prob )
+#                    print('Epoch {:>2}, CIFAR-10 Batch {}:  '.format(epoch + 1, batch_i), end='')
+                    print_stats(sess, batch_features, batch_labels, cost, accuracy, x, y, keep_prob, valid_features, valid_labels )
+
+            # Save Model
+            save_path = saver.save(sess, save_model_path)
+
+        # Ask for all the services to stop.
+        print("{0} stopping supervisor".format(datetime.now().isoformat()))
+        sv.stop()
 
 
 def test_model(batch_size):
@@ -367,9 +610,20 @@ def test_model(batch_size):
 # def main():
 def main_fun(argv, ctx):
     import tensorflow as tf
+    import time
+
+    worker_num = ctx.worker_num
+    job_name = ctx.job_name
+    task_index = ctx.task_index
+    cluster_spec = ctx.cluster_spec
+    num_workers = len(cluster_spec['worker'])
 
     # Verify if CIFAR data is available, if not, then download
     maybe_download_and_extract()
+
+    # Delay PS nodes a bit, since workers seem to reserve GPUs more quickly/reliably (w/o conflict)
+    if job_name == "ps":
+        time.sleep((worker_num + 1) * 5)
 
     # Hyperparameter Tune Parameters
     epochs = 100
@@ -377,26 +631,47 @@ def main_fun(argv, ctx):
     keep_probability = 0.5
 
     # Train Model
-    preprocess_data_and_save(epochs, batch_size, keep_probability)
+    preprocess_data_and_save(epochs, batch_size, keep_probability,ctx)
 
     # Test Model
     test_model(batch_size)
 
-    pass
 
 if __name__ == '__main__':
+# main_fun("none","none")
+    import argparse
 
-    main_fun("none","none")
-    # import argparse
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--tensorboard", help="launch tensorboard process", action="store_true")
-    # args, rem = parser.parse_known_args()
-    #
-    # sc = SparkContext(conf=SparkConf().setAppName("your_app_name"))
-    # num_executors = int(sc._conf.get("spark.executor.instances"))
-    # num_ps = 1
-    # tensorboard = True
-    #
-    # cluster = TFCluster.reserve(sc, num_executors, num_ps, tensorboard, TFCluster.InputMode.TENSORFLOW)
-    # cluster.start(main_fun, sys.argv)
-    # cluster.shutdown()
+    tf.app.flags.DEFINE_integer('num_gpus', 1, 'Number of GPUs per node.')
+    tf.app.flags.DEFINE_boolean('rdma', False, 'Use RDMA between GPUs')
+
+    sc = SparkContext(conf=SparkConf().setAppName("DL_IMAGE_CLASS"))
+    executors = sc._conf.get("spark.executor.instances")
+    num_executors = int(executors) if executors is not None else 1
+    num_ps = 1
+    tensorboard = True
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-e", "--epochs", help="number of epochs", type=int, default=0)
+    parser.add_argument("-f", "--format", help="example format: (csv|pickle|tfr)", choices=["csv", "pickle", "tfr"],
+                        default="tfr")
+    parser.add_argument("-i", "--images", help="HDFS path to MNIST images in parallelized format")
+    parser.add_argument("-l", "--labels", help="HDFS path to MNIST labels in parallelized format")
+    parser.add_argument("-m", "--model", help="HDFS path to save/load model during train/test", default="mnist_model")
+    parser.add_argument("-n", "--cluster_size", help="number of nodes in the cluster (for Spark Standalone)", type=int,
+                        default=num_executors)
+    parser.add_argument("-o", "--output", help="HDFS path to save test/inference output", default="predictions")
+    parser.add_argument("-r", "--readers", help="number of reader/enqueue threads", type=int, default=1)
+    parser.add_argument("-s", "--steps", help="maximum number of steps", type=int, default=1000)
+    parser.add_argument("-tb", "--tensorboard", help="launch tensorboard process", action="store_true")
+    parser.add_argument("-X", "--mode", help="train|inference", default="train")
+    parser.add_argument("-c", "--rdma", help="use rdma connection", default=False)
+    args = parser.parse_args()
+    print("args:", args)
+
+    print("{0} ===== Start".format(datetime.now().isoformat()))
+
+    cluster = TFCluster.reserve(sc, args.cluster_size, num_ps, args.tensorboard, TFCluster.InputMode.TENSORFLOW)
+    cluster.start(main_fun, args)
+    cluster.shutdown()
+
+    print("{0} ===== Stop".format(datetime.now().isoformat()))
