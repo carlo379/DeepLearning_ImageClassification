@@ -1,5 +1,7 @@
 
-# Image Classification using Deep Learning - Udacity Project #2
+
+# Image Classification using Convolutional Neural Networks
+## Udacity Project #2
 This is my submission to Project #2 of Udacity's Deep Learning Fundation course.
 On this project I created a Convolutional Neural Network (CNN) to classify images of the [CIFAR10](https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz) image set.
 
@@ -169,9 +171,6 @@ Preprocess all the CIFAR-10 data and save it to file. 10% of the training data i
 helper.preprocess_and_save_data(cifar10_dataset_folder_path, normalize, one_hot_encode)
 ```
 
-# Check Point
-The preprocessed data has been saved to disk.
-
 
 ```python
 import pickle
@@ -283,7 +282,6 @@ def flatten(x_tensor):
     # Multiply dimensions and reshape infering
     fc1 = tf.reshape(x_tensor, [-1,x[1]*x[2]*x[3]])
     return fc1 
-
 
 """
 Function Test
@@ -481,7 +479,7 @@ Parameters to Tune:
 
 
 ```python
-# TODO: Tune Parameters
+# Tune Parameters
 epochs = 100
 batch_size = 128
 keep_probability = 0.5
@@ -1018,7 +1016,7 @@ with tf.Session() as sess:
 
 
 ## Test Model
-Tune Hyperparameters and Test your model against the test dataset, util accuracy is greater than 50%. 
+Tune Hyperparameters and Test your model against the test dataset, until accuracy is greater than 50%. 
 
 
 ```python
@@ -1089,5 +1087,5 @@ test_model()
 
 
 
-![png](output_33_1.png)
+![png](output_32_1.png)
 
