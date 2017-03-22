@@ -8,3 +8,9 @@ cifar-10-batches-py
 *.gz
 *.p
 .idea/
+.pem
+.key
+.cert
+key
+cert
+.conf
