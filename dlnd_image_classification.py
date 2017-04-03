@@ -5,12 +5,8 @@ import random
 import tarfile
 from os.path import isfile, isdir
 from urllib.request import urlretrieve
-
 import numpy as np
 import tensorflow as tf
-from com.yahoo.ml.tf import TFCluster
-from pyspark.conf import SparkConf
-from pyspark.context import SparkContext
 from tqdm import tqdm
 
 from CarlosM_Project2_v1 import helper
@@ -18,28 +14,29 @@ from CarlosM_Project2_v1 import helper
 # Set Global Variable for Data Folder Path
 cifar10_dataset_folder_path = 'cifar-10-batches-py'
 
-class DLProgress(tqdm):
-    last_block = 0
+# Download Data
+#============================#
+def download_images():
 
-    def hook(self, block_num=1, block_size=1, total_size=None):
-        self.total = total_size
-        self.update((block_num - self.last_block) * block_size)
-        self.last_block = block_num
+    class DLProgress(tqdm):
+        last_block = 0
 
-if not isfile('cifar-10-python.tar.gz'):
-    with DLProgress(unit='B', unit_scale=True, miniters=1, desc='CIFAR-10 Dataset') as pbar:
-        urlretrieve(
-            'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz',
-            'cifar-10-python.tar.gz',
-            pbar.hook)
+        def hook(self, block_num=1, block_size=1, total_size=None):
+            self.total = total_size
+            self.update((block_num - self.last_block) * block_size)
+            self.last_block = block_num
 
-if not isdir(cifar10_dataset_folder_path):
-    with tarfile.open('cifar-10-python.tar.gz') as tar:
-        tar.extractall()
-        tar.close()
+    if not isfile('cifar-10-python.tar.gz'):
+        with DLProgress(unit='B', unit_scale=True, miniters=1, desc='CIFAR-10 Dataset') as pbar:
+            urlretrieve(
+                'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz',
+                'cifar-10-python.tar.gz',
+                pbar.hook)
 
-# Set Global Var for number of Labels
-total_lbs = 10
+    if not isdir(cifar10_dataset_folder_path):
+        with tarfile.open('cifar-10-python.tar.gz') as tar:
+            tar.extractall()
+            tar.close()
 
 # Normalize Data
 #============================#
@@ -228,7 +225,12 @@ def train_neural_network(session, optimizer, keep_probability, feature_batch, la
     : feature_batch: Batch of Numpy image data
     : label_batch: Batch of Numpy label data
     """
-    session.run(optimizer, feed_dict = {x: feature_batch, y: label_batch, keep_prob: keep_probability})
+    feed_dict = {
+        x:feature_batch,
+        y:label_batch,
+        keep_prob:keep_probability
+    }
+    session.run(optimizer, feed_dict)
 
 def print_stats(session, feature_batch, label_batch, cost, accuracy):
     """
@@ -248,145 +250,7 @@ def print_stats(session, feature_batch, label_batch, cost, accuracy):
 
     print('Loss: {:>10.4f} Validation Accuracy: {:.6f}'.format(loss,valid_acc))
 
-# TESTS
-#============================#
-# # Test Data Folder Path
-# tests.test_folder_path(cifar10_dataset_folder_path)
-# # Data Normalization:
-# tests.test_normalize(normalize)
-# # One Hot Encode
-# tests.test_one_hot_encode(one_hot_encode)
-# # Reset Values
-# tf.reset_default_graph()
-# # Image Input
-# tests.test_nn_image_inputs(neural_net_image_input)
-# # Label Input
-# tests.test_nn_label_inputs(neural_net_label_input)
-# Dropout keep probability Input
-# tests.test_nn_keep_prob_inputs(neural_net_keep_prob_input)
-# # Test Convolution and Max Pooling
-# tests.test_con_pool(conv2d_maxpool)
-# # Test Flatten
-# tests.test_flatten(flatten)
-# # Test Fully Connected Layer
-# tests.test_fully_conn(fully_conn)
-# # Test Output Layer
-# tests.test_output(output)
-# Test Create Convolutional Model
-##############################
-## Build the Neural Network ##
-##############################
-
-# # Remove previous weights, bias, inputs, etc..
-# tf.reset_default_graph()
-#
-# # Inputs
-# x = neural_net_image_input((32, 32, 3))
-# y = neural_net_label_input(10)
-# keep_prob = neural_net_keep_prob_input()
-#
-# # Model
-# logits = conv_net(x, keep_prob)
-#
-# # Name logits Tensor, so that is can be loaded from disk after training
-# logits = tf.identity(logits, name='logits')
-#
-# # Loss and Optimizer
-# cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y))
-# optimizer = tf.train.AdamOptimizer().minimize(cost)
-#
-# # Accuracy
-# correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(y, 1))
-# accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
-#
-# tests.test_conv_net(conv_net)
-
-# # Test Training Neural Network
-# tests.test_train_nn(train_neural_network)
-
-# Preprocess all data and save
-#==============================#
-
-# Preprocess Training, Validation, and Testing Data
-helper.preprocess_and_save_data(cifar10_dataset_folder_path, normalize, one_hot_encode)
-
-# Load the Preprocessed Validation data
-valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
-
-# TODO: Tune Parameters
-epochs = 100
-batch_size = 128
-keep_probability = 0.5
-
-# Remove previous weights, bias, inputs, etc..
-tf.reset_default_graph()
-
-# Inputs
-x = neural_net_image_input((32, 32, 3))
-y = neural_net_label_input(10)
-keep_prob = neural_net_keep_prob_input()
-
-# Model
-logits = conv_net(x, keep_prob)
-
-# Name logits Tensor, so that is can be loaded from disk after training
-logits = tf.identity(logits, name='logits')
-
-# Loss and Optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y))
-optimizer = tf.train.AdamOptimizer(1e-4).minimize(cost)
-
-# Accuracy
-correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(y, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
-
-# print('Checking the Training on a Single Batch...')
-# with tf.Session() as sess:
-#     # Initializing the variables
-#     sess.run(tf.global_variables_initializer())
-#
-#     # Training cycle
-#     for epoch in range(epochs):
-#         batch_i = 1
-#         for batch_features, batch_labels in helper.load_preprocess_training_batch(batch_i, batch_size):
-#             train_neural_network(sess, optimizer, keep_probability, batch_features, batch_labels)
-#         print('Epoch {:>2}, CIFAR-10 Batch {}:  '.format(epoch + 1, batch_i), end='')
-#         print_stats(sess, batch_features, batch_labels, cost, accuracy)
-
-save_model_path = './image_classification'
-
-print('Training...')
-with tf.Session() as sess:
-    # Initializing the variables
-    sess.run(tf.global_variables_initializer())
-
-    # Training cycle
-    for epoch in range(epochs):
-        # Loop over all batches
-        n_batches = 5
-        for batch_i in range(1, n_batches + 1):
-            for batch_features, batch_labels in helper.load_preprocess_training_batch(batch_i, batch_size):
-                train_neural_network(sess, optimizer, keep_probability, batch_features, batch_labels)
-            print('Epoch {:>2}, CIFAR-10 Batch {}:  '.format(epoch + 1, batch_i), end='')
-            print_stats(sess, batch_features, batch_labels, cost, accuracy)
-
-    # Save Model
-    saver = tf.train.Saver()
-    save_path = saver.save(sess, save_model_path)
-
-# Set batch size if not already set
-try:
-    if batch_size:
-        pass
-except NameError:
-    batch_size = 64
-
-save_model_path = './image_classification'
-n_samples = 4
-top_n_predictions = 3
-
-
-def test_model():
+def test_model(batch_size, save_model_path, n_samples, top_n_predictions):
     """
     Test the saved model against the test dataset
     """
@@ -427,25 +291,79 @@ def test_model():
             feed_dict={loaded_x: random_test_features, loaded_y: random_test_labels, loaded_keep_prob: 1.0})
         helper.display_image_predictions(random_test_features, random_test_labels, random_test_predictions)
 
+def main():
 
-test_model()
+    download_images()
 
-# def main():
-def main_fun(argv, ctx):
-  pass
+    # Preprocess all data and save
+    # ==============================#
+
+    # Preprocess Training, Validation, and Testing Data
+    helper.preprocess_and_save_data(cifar10_dataset_folder_path, normalize, one_hot_encode)
+
+    # Load the Preprocessed Validation data
+    valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
+
+    # TODO: Tune Parameters
+    epochs = 100
+    batch_size = 128
+    keep_probability = 0.5
+
+    # Remove previous weights, bias, inputs, etc..
+    tf.reset_default_graph()
+
+    # Inputs
+    x = neural_net_image_input((32, 32, 3))
+    y = neural_net_label_input(10)
+    keep_prob = neural_net_keep_prob_input()
+
+    # Model
+    logits = conv_net(x, keep_prob)
+
+    # Name logits Tensor, so that is can be loaded from disk after training
+    logits = tf.identity(logits, name='logits')
+
+    # Loss and Optimizer
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y))
+    optimizer = tf.train.AdamOptimizer(1e-4).minimize(cost)
+
+    # Accuracy
+    correct_pred = tf.equal(tf.argmax(logits, 1), tf.argmax(y, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32), name='accuracy')
+
+    save_model_path = './image_classification'
+
+    print('Training...')
+    with tf.Session() as sess:
+        # Initializing the variables
+        sess.run(tf.global_variables_initializer())
+
+        # Training cycle
+        for epoch in range(epochs):
+            # Loop over all batches
+            n_batches = 5
+            for batch_i in range(1, n_batches + 1):
+                for batch_features, batch_labels in helper.load_preprocess_training_batch(batch_i, batch_size):
+                    train_neural_network(sess, optimizer, keep_probability, batch_features, batch_labels)
+                print('Epoch {:>2}, CIFAR-10 Batch {}:  '.format(epoch + 1, batch_i), end='')
+                print_stats(sess, batch_features, batch_labels, cost, accuracy)
+
+        # Save Model
+        saver = tf.train.Saver()
+        save_path = saver.save(sess, save_model_path)
+
+    # Set batch size if not already set
+    try:
+        if batch_size:
+            pass
+    except NameError:
+        batch_size = 64
+
+    save_model_path = './image_classification'
+    n_samples = 4
+    top_n_predictions = 3
+
+    test_model(batch_size, save_model_path, n_samples, top_n_predictions)
 
 if __name__ == '__main__':
-    # tf.app.run()
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--tensorboard", help="launch tensorboard process", action="store_true")
-    args, rem = parser.parse_known_args()
-
-    sc = SparkContext(conf=SparkConf().setAppName("your_app_name"))
-    num_executors = int(sc._conf.get("spark.executor.instances"))
-    num_ps = 1
-    tensorboard = True
-
-    cluster = TFCluster.reserve(sc, num_executors, num_ps, tensorboard, TFCluster.InputMode.TENSORFLOW)
-    cluster.start(main_fun, sys.argv)
-    cluster.shutdown()
+    main()
