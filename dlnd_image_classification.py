@@ -216,7 +216,9 @@ def conv_net(x, keep_prob):
     # TODO: return output
     return do
 
-def train_neural_network(session, optimizer, keep_probability, feature_batch, label_batch):
+def train_neural_network(x,y,keep_prob, session, optimizer, keep_probability, feature_batch, label_batch):
+    import tensorflow as tf
+
     """
     Optimize the session on a batch of images and labels
     : session: Current TensorFlow session
@@ -225,14 +227,9 @@ def train_neural_network(session, optimizer, keep_probability, feature_batch, la
     : feature_batch: Batch of Numpy image data
     : label_batch: Batch of Numpy label data
     """
-    feed_dict = {
-        x:feature_batch,
-        y:label_batch,
-        keep_prob:keep_probability
-    }
-    session.run(optimizer, feed_dict)
+    session.run(optimizer, feed_dict={x: feature_batch,y: label_batch, keep_prob: keep_probability})
 
-def print_stats(session, feature_batch, label_batch, cost, accuracy):
+def print_stats(x,y,keep_prob,valid_features,valid_labels,session, feature_batch, label_batch, cost, accuracy):
     """
     Print information about loss and validation accuracy
     : session: Current TensorFlow session
@@ -344,9 +341,9 @@ def main():
             n_batches = 5
             for batch_i in range(1, n_batches + 1):
                 for batch_features, batch_labels in helper.load_preprocess_training_batch(batch_i, batch_size):
-                    train_neural_network(sess, optimizer, keep_probability, batch_features, batch_labels)
+                    train_neural_network(x,y,keep_prob, sess, optimizer, keep_probability, batch_features, batch_labels)
                 print('Epoch {:>2}, CIFAR-10 Batch {}:  '.format(epoch + 1, batch_i), end='')
-                print_stats(sess, batch_features, batch_labels, cost, accuracy)
+                print_stats(x,y,keep_prob,valid_features,valid_labels,sess, batch_features, batch_labels, cost, accuracy)
 
         # Save Model
         saver = tf.train.Saver()
